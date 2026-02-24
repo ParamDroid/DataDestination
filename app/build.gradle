@@ -1,0 +1,53 @@
+plugins {
+    alias(libs.plugins.android.application)
+}
+
+android {
+    namespace 'com.vkmu.datadestination'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "com.vkmu.datadestination"
+        minSdk 22
+        targetSdk 36
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // This block stays here: it tells the compiler HOW to build
+        externalNativeBuild {
+            cmake {
+                cFlags "-std=c11"
+                arguments "-DANDROID_STL=c++_shared"
+            }
+        }
+    }
+
+    // This block MUST be outside defaultConfig: it tells Gradle WHERE the file is
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    ndkVersion '29.0.14206865'
+}
+
+dependencies {
+    implementation libs.appcompat
+    implementation libs.material
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+}

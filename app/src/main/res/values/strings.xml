@@ -1,0 +1,7 @@
+<resources>
+    <string name="vpn_title">DataDestination VPN</string>
+    <string name="vpn_running">Monitoring network traffic</string>
+    <string name="app_name">DataDestination</string>
+    <string name="start_vpn">Start VPN</string>
+    <string name="stop_vpn">Stop VPN</string>
+</resources>

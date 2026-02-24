@@ -1,0 +1,30 @@
+cmake_minimum_required(VERSION 3.18.1)
+project("datadestination")
+
+# 1. Tell CMake where to find headers (zdtun and your local pcapdroid.h)
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/zdtun/
+)
+
+# 2. Add the zdtun subdirectory.
+# This runs the CMakeLists.txt inside the zdtun folder.
+add_subdirectory(zdtun)
+
+# 3. Create your main 'capture' library
+add_library(capture SHARED
+    capture_pcap.c
+    zdtun/zdtun.c
+    zdtun/utils.c
+)
+
+# 4. Link everything together.
+# 'zdtun' is the target name defined in the cloned repo's CMakeLists.
+find_library(log-lib log)
+
+target_link_libraries(capture
+    zdtun
+    log       # For android logging
+    android   # For native android features
+    ${log-lib}
+)
