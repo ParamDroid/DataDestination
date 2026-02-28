@@ -8,6 +8,7 @@ import android.net.VpnService;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import com.vkmu.datadestination.R;
+import com.vkmu.datadestination.debug.DebugLogger;
 import java.io.IOException;
 
 public class VpnServiceImpl extends VpnService {
@@ -31,6 +32,10 @@ public class VpnServiceImpl extends VpnService {
 
     private native void stopPacketLoop();
     // ----------------------
+
+    public void onDebugIp(String ip) {
+        DebugLogger.log(ip);
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {

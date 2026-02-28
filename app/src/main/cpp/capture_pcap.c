@@ -22,7 +22,7 @@ static volatile bool running = true;
 static JavaVM *g_vm = NULL;
 static jobject g_service = NULL;
 static jmethodID g_protectMethod = NULL;
-
+static jmethodID g_debugMethod = NULL;
 
 // void zdtun_inject_pkt(zdtun_t *pZdtun, uint8_t buffer[65535], uint32_t i); //unused
 // void zdtun_step(zdtun_t *pZdtun, int i); //unused
@@ -56,7 +56,35 @@ static void on_socket_open(zdtun_t *tun, socket_t socket) {
     if (attached)
         (*g_vm)->DetachCurrentThread(g_vm);
 }
+static int on_connection_open(zdtun_t *tun, zdtun_conn_t *conn_info) {
 
+    if (!g_vm || !g_service || !g_debugMethod)
+        return 0;
+
+    JNIEnv *env;
+    bool attached = false;
+
+    if ((*g_vm)->GetEnv(g_vm, (void**)&env, JNI_VERSION_1_6) != JNI_OK) {
+        (*g_vm)->AttachCurrentThread(g_vm, &env, NULL);
+        attached = true;
+    }
+
+    char tuple_str[256];
+    zdtun_5tuple2str(
+            zdtun_conn_get_5tuple(conn_info),
+            tuple_str,
+            sizeof(tuple_str)
+    );
+
+    jstring jStr = (*env)->NewStringUTF(env, tuple_str);
+    (*env)->CallVoidMethod(env, g_service, g_debugMethod, jStr);
+    (*env)->DeleteLocalRef(env, jStr);
+
+    if (attached)
+        (*g_vm)->DetachCurrentThread(g_vm);
+
+    return 0;
+}
 /**
  * Mandatory callback for zdtun.
  * This is called when zdtun has a packet ready to be sent BACK to the Android OS.
@@ -99,7 +127,7 @@ Java_com_vkmu_datadestination_vpn_VpnServiceImpl_runPacketLoop(JNIEnv *env, jobj
     // Cache protectSocket method
     jclass cls = (*env)->GetObjectClass(env, thiz);
     g_protectMethod = (*env)->GetMethodID(env, cls, "protectSocket", "(I)Z");
-
+    g_debugMethod = (*env)->GetMethodID(env, cls, "onDebugIp", "(Ljava/lang/String;)V");
     if (!g_protectMethod) {
         LOGE("Failed to find protectSocket method");
         (*env)->DeleteLocalRef(env, cls);
@@ -111,6 +139,7 @@ Java_com_vkmu_datadestination_vpn_VpnServiceImpl_runPacketLoop(JNIEnv *env, jobj
     zdtun_callbacks_t callbacks = {0};
     callbacks.send_client = send_to_vpn_interface;
     callbacks.on_socket_open = on_socket_open;
+    callbacks.on_connection_open = on_connection_open;
 
     zdtun_t *tun = zdtun_init(&callbacks, &vpn_fd);
     if (!tun) {
