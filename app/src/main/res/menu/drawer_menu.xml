@@ -2,8 +2,32 @@
     <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
         <item
+            android:id="@+id/nav_main"
+            android:title="Home"
+            android:icon="@android:drawable/ic_media_previous"
+            />
+        <item
+            android:id="@+id/nav_geoip"
+            android:title="@string/geoip"
+            android:icon="@android:drawable/ic_dialog_map"
+            />
+        <item
+        android:id="@+id/nav_abuse"
+        android:title="@string/threat_checker"
+        android:icon="@android:drawable/ic_menu_search"/>
+
+        <item
+        android:id="@+id/nav_pie"
+        android:title="@string/traffic_chart"
+        android:icon="@android:drawable/ic_menu_sort_by_size"/>
+
+        <item
+        android:id="@+id/nav_settings"
+        android:title="@string/action_settings"
+        android:icon="@android:drawable/ic_menu_preferences"/>
+
+        <item
             android:id="@+id/nav_about"
             android:title="@string/about"
             android:icon="@android:drawable/ic_menu_info_details"/>
-
-    </menu>
+        </menu>

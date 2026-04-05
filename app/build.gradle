@@ -42,12 +42,17 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
     ndkVersion '29.0.14206865'
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
     implementation libs.appcompat
     implementation libs.material
+    implementation libs.constraintlayout
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+    implementation libs.mpandroidchart
 }

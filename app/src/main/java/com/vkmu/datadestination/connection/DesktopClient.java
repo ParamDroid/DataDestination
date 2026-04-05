@@ -1,42 +1,92 @@
 package com.vkmu.datadestination.connection;
 
 import com.vkmu.datadestination.debug.DebugLogger;
+import com.vkmu.datadestination.parser.FlowPacket;
+import com.vkmu.datadestination.parser.PacketHub;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.ServerSocket;
 import java.net.Socket;
 
-public class DesktopReceiver implements Runnable {
+public class DesktopClient implements Runnable {
 
-    private static final int PORT = 9000;
-    private boolean running = true;
+    private final String host;
+    private final int port;
+
+    public DesktopClient(String host, int port) {
+        this.host = host;
+        this.port = port;
+    }
 
     @Override
     public void run() {
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+        DebugLogger.log("Starting DesktopClient...");
 
-            while (running) {
-                Socket socket = serverSocket.accept();
+        while (true) {
+            DebugLogger.log("Connecting to " + host + ":" + port);
 
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream())
-                );
+            try (Socket socket = new Socket(host, port)) {
 
-                String line = reader.readLine();
-                if (line != null) {
-                    DebugLogger.log("Desktop: " + line);
+                DebugLogger.log("Connected to " + host + ":" + port);
+
+                BufferedReader reader =
+                        new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+
+                    String cleanIp = cleanIp(line);
+
+                    if (cleanIp == null || cleanIp.isEmpty()) continue;
+
+                    // optional strict IPv4 validation
+                    if (!cleanIp.matches("\\d+\\.\\d+\\.\\d+\\.\\d+")) continue;
+
+                    DebugLogger.log("Desktop IP: " + cleanIp);
+
+                    FlowPacket packet = new FlowPacket(
+                            "desktop",
+                            cleanIp,
+                            0,
+                            0,
+                            "TCP",
+                            System.currentTimeMillis()
+                    );
+
+                    PacketHub.push(packet);
                 }
 
-                socket.close();
-            }
+            } catch (Exception e) {
 
-        } catch (Exception e) {
-            DebugLogger.log("Server error: " + e.getMessage());
+                DebugLogger.log("DesktopClient error: " + e.getMessage());
+
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException ignored) {}
+            }
         }
     }
 
-    public void stop() {
-        running = false;
+    /**
+     * Normalize incoming data to clean IP
+     */
+    private String cleanIp(String input) {
+
+        if (input == null) return null;
+
+        String ip = input.trim();
+
+        // extract destination if arrow exists
+        if (ip.contains("->")) {
+            ip = ip.split("->")[1].trim();
+        }
+
+        // remove port (IPv4 only)
+        if (ip.contains(":") && ip.contains(".")) {
+            ip = ip.substring(0, ip.indexOf(":"));
+        }
+
+        return ip;
     }
 }
