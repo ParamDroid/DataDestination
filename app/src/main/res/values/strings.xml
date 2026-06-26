@@ -9,7 +9,7 @@
     <string name="datadestination">DataDestination</string>
     <string name="open">Open Navigation Drawer</string>
     <string name="close">Close Navigation Drawer\n</string>
-    <string name="abouttxt">DataDestination 0.3-beta\n\n\nThis application captures network metadata using Android VpnService and zdtun library with feature like GeoIP, Thread checker (Using AbuseIPDB and cert), a graphical representation of GeoIP PieChart and many more to be added.\n\nTHIS PROJECT IS UNDER MIT LICENSE.\n\n**DISCLAIMER**\nThis application is an early-stage, experimental software build and is provided “as is” without any guarantees of stability, accuracy, or reliability. It has not been fully tested and may contain bugs, errors, incomplete features, or unexpected behavior.\nBy installing or using this application, you acknowledge and accept that:\n\n- The software may produce incorrect results, including inaccurate network, GeoIP, or threat analysis data.\n- The application may crash, freeze, or behave unpredictably.\n- Performance issues, including increased battery usage, device heating, or system instability, may occur.\n- Features may change, break, or be removed without notice.\n- The application may interact with network traffic in ways that could affect connectivity or device behavior.\nThis software is intended for testing, educational, and development purposes only. It should not be relied upon for security-critical, production, or safety-sensitive use.\nThe developer assumes no responsibility or liability for any direct or indirect damage, data loss, security issues, or other consequences resulting from the use or misuse of this application.\n**By continuing to use this application, you agree to this disclaimer and accept all associated risks.**\n\nTHIRD PARTY LICENSE INCLUDES: zdtun and pcapdroid\nTHIRD PARTY resources used: \n-IP Geolocation by DB-IP https://db-ip.com \n-IP Abuse DB API https://abuseipdb.com\n\n\nCreated by vkmu 2026</string>
+    <string name="abouttxt">DataDestination 0.4-beta\n\n\nThis application captures network metadata using Android VpnService and zdtun library with feature like GeoIP, Thread checker (Using AbuseIPDB and cert), a graphical representation of GeoIP PieChart and many more to be added.\n\nTHIS PROJECT IS UNDER MIT LICENSE.\n\n**DISCLAIMER**\nThis application is an early-stage, experimental software build and is provided “as is” without any guarantees of stability, accuracy, or reliability. It has not been fully tested and may contain bugs, errors, incomplete features, or unexpected behavior.\nBy installing or using this application, you acknowledge and accept that:\n\n- The software may produce incorrect results, including inaccurate network, GeoIP, or threat analysis data.\n- The application may crash, freeze, or behave unpredictably.\n- Performance issues, including increased battery usage, device heating, or system instability, may occur.\n- Features may change, break, or be removed without notice.\n- The application may interact with network traffic in ways that could affect connectivity or device behavior.\nThis software is intended for testing, educational, and development purposes only. It should not be relied upon for security-critical, production, or safety-sensitive use.\nThe developer assumes no responsibility or liability for any direct or indirect damage, data loss, security issues, or other consequences resulting from the use or misuse of this application.\n**By continuing to use this application, you agree to this disclaimer and accept all associated risks.**\n\nTHIRD PARTY LICENSE INCLUDES: zdtun and pcapdroid\nTHIRD PARTY resources used: \n-IP Geolocation by DB-IP https://db-ip.com \n-IP Abuse DB API https://abuseipdb.com\n\n\nCreated by vkmu 2026</string>
     <string name="packets_will_appear_here">Packets will appear here</string>
     <string name="title_activity_scrolling">ScrollingActivity</string>
     <string name="large_text">
@@ -112,4 +112,20 @@
     <string name="enter_abuseipdb_api_key">Enter AbuseIPDB API Key</string>
     <string name="threat_intel">Threat Intel</string>
     <string name="threat_check">Threat check</string>
+    <string name="network_monitor">Network Monitor</string>
+    <string name="vpn_control">VPN Control</string>
+    <string name="metadata_only">Metadata only</string>
+    <string name="non_root_vpn">Non-root VPN</string>
+    <string name="live_capture">Live capture</string>
+    <string name="destination_intel">Destination Intel</string>
+    <string name="geoip_panel_title">Resolved Destinations</string>
+    <string name="threat_panel_title">Reputation Overview</string>
+    <string name="chart_panel_title">Traffic by Country</string>
+    <string name="settings_panel_title">Preferences</string>
+    <string name="api_key_label">AbuseIPDB API key</string>
+    <string name="debug_mode_label">Debug console</string>
+    <string name="desktop_client_label">Desktop client (experimental)</string>
+    <string name="desktop_ip_label">Desktop IP</string>
+    <string name="desktop_port_label">Desktop port</string>
+    <string name="DataDestination">DataDestination</string>
 </resources>

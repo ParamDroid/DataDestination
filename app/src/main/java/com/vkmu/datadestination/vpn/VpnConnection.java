@@ -1,5 +1,6 @@
 package com.vkmu.datadestination.vpn;
 
+import android.content.SharedPreferences;
 import android.net.VpnService;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
@@ -94,7 +95,33 @@ public class VpnConnection implements Runnable {
 
             socket.setSoTimeout(2000);
 
-            InetAddress dnsServer = InetAddress.getByName("8.8.8.8");
+            //Using setpref for Custom dns
+            //can be hardcoded as
+            //InetAddress dnsServer = InetAddress.getByName("8.8.8.8");
+
+
+            SharedPreferences prefs =
+                    service.getSharedPreferences(
+                            "app_settings",
+                            VpnService.MODE_PRIVATE
+                    );
+
+            String dns;
+
+            if (prefs.getBoolean("custom_dns_enabled", false)) {
+
+                dns = prefs.getString(
+                        "custom_dns",
+                        "1.1.1.1"
+                );
+
+            } else {
+
+                dns = "1.1.1.1"; // Cloudflare default
+            }
+
+            InetAddress dnsServer =
+                    InetAddress.getByName(dns);
 
             DatagramPacket request =
                     new DatagramPacket(payload, payload.length,

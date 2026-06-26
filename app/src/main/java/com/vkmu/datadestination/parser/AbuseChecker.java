@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,8 +30,9 @@ public class AbuseChecker {
                 return "No API Key";
             }
 
+            String encodedIp = URLEncoder.encode(ip, "UTF-8");
             URL url = new URL(
-                    "https://api.abuseipdb.com/api/v2/check?ipAddress=" + ip
+                    "https://api.abuseipdb.com/api/v2/check?ipAddress=" + encodedIp
             );
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();

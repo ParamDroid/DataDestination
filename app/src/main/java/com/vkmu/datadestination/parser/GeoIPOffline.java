@@ -10,10 +10,9 @@ import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GeoIPOffline {
 
@@ -31,83 +30,88 @@ public class GeoIPOffline {
 
     private static final List<Range> rangesV4 = new ArrayList<>();
     private static final List<RangeV6> rangesV6 = new ArrayList<>();
-    private static boolean loaded = false;
-    //HASHMAP
-    private static final Map<String, String> cache = new HashMap<>();
+    private static volatile boolean loaded = false;
+    private static final Object initLock = new Object();
+    private static final Map<String, String> cache = new ConcurrentHashMap<>();
+
     public static void init(Context context) {
         if (loaded) return;
 
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(context.getAssets().open("dbip.csv"))
-        )) {
-            DebugLogger.log("Loading GeoIP CSV...");
+        synchronized (initLock) {
+            if (loaded) return;
 
-            String line;
-            while ((line = reader.readLine()) != null) {
-                try {
-                    String[] parts = line.replace("\"", "").split(",");
-                    if (parts.length < 3) continue;
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(context.getAssets().open("dbip.csv"))
+            )) {
+                DebugLogger.log("Loading GeoIP CSV...");
 
-                    String startIp = parts[0].trim();
-                    String endIp = parts[1].trim();
-                    String country = parts[2].trim();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    try {
+                        String[] parts = line.replace("\"", "").split(",");
+                        if (parts.length < 3) continue;
 
-                    if ("ZZ".equals(country)) continue;
+                        String startIp = parts[0].trim();
+                        String endIp = parts[1].trim();
+                        String country = parts[2].trim();
 
-                    if (startIp.contains(":")) {
-                        // IPv6
-                        RangeV6 range = new RangeV6();
-                        range.start = ipToBigInt(startIp);
-                        range.end = ipToBigInt(endIp);
-                        range.country = country;
-                        if (range.start != null && range.end != null) {
-                            rangesV6.add(range);
+                        if ("ZZ".equals(country)) continue;
+
+                        if (startIp.contains(":")) {
+                            RangeV6 range = new RangeV6();
+                            range.start = ipToBigInt(startIp);
+                            range.end = ipToBigInt(endIp);
+                            range.country = country;
+                            if (range.start != null && range.end != null) {
+                                rangesV6.add(range);
+                            }
+                        } else {
+                            Range range = new Range();
+                            range.start = ipToLong(startIp);
+                            range.end = ipToLong(endIp);
+                            range.country = country;
+                            rangesV4.add(range);
                         }
-                    } else {
-                        // IPv4
-                        Range range = new Range();
-                        range.start = ipToLong(startIp);
-                        range.end = ipToLong(endIp);
-                        range.country = country;
-                        rangesV4.add(range);
+                    } catch (Exception e) {
+                        DebugLogger.log("Error parsing GeoIP row");
                     }
-                } catch (Exception e) {
-                    // Log and continue to next line
-                    DebugLogger.log("Error parsing line: " + line);
                 }
+
+                Collections.sort(rangesV4, (a, b) -> Long.compare(a.start, b.start));
+                Collections.sort(rangesV6, (a, b) -> a.start.compareTo(b.start));
+
+                loaded = true;
+                DebugLogger.log("GeoIP loaded: v4=" + rangesV4.size() + ", v6=" + rangesV6.size());
+            } catch (Exception e) {
+                DebugLogger.log("Failed to load GeoIP: " + e.getMessage());
+                // e.printStackTrace();  //Remove comment if need logging
             }
-
-            // Sort lists for binary search
-            Collections.sort(rangesV4, (a, b) -> Long.compare(a.start, b.start));
-            Collections.sort(rangesV6, (a, b) -> a.start.compareTo(b.start));
-
-            loaded = true;
-            DebugLogger.log("GeoIP loaded: v4=" + rangesV4.size() + ", v6=" + rangesV6.size());
-        } catch (Exception e) {
-            DebugLogger.log("Failed to load GeoIP: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
     public static String resolve(String ip) {
-        if (!loaded) return "Loading...";
         if (ip == null) return "Unknown";
 
+        String cleanIp = IpAddressUtils.extractDestinationIp(ip);
+        if (cleanIp == null) return "Unknown";
+
+        if (!loaded) return "Loading...";
+
         // ✅ cache check
-        if (cache.containsKey(ip)) {
-            return cache.get(ip);
+        if (cache.containsKey(cleanIp)) {
+            return cache.get(cleanIp);
         }
 
         String result;
 
-        if (ip.contains(":")) {
-            result = resolveV6(ip);
+        if (IpAddressUtils.isIpv6(cleanIp)) {
+            result = resolveV6(cleanIp);
         } else {
-            result = resolveV4(ip);
+            result = resolveV4(cleanIp);
         }
 
         // ✅ store result
-        cache.put(ip, result);
+        cache.put(cleanIp, result);
 
         return result;
     }
@@ -120,8 +124,18 @@ public class GeoIPOffline {
             return "Unknown";
         }
 
-        for (Range range : rangesV4) {
-            if (target >= range.start && target <= range.end) {
+        int left = 0;
+        int right = rangesV4.size() - 1;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            Range range = rangesV4.get(mid);
+
+            if (target < range.start) {
+                right = mid - 1;
+            } else if (target > range.end) {
+                left = mid + 1;
+            } else {
                 return range.country;
             }
         }

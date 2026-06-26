@@ -12,6 +12,7 @@ import com.vkmu.datadestination.debug.DebugLogger;
 import com.vkmu.datadestination.connection.DesktopClient;
 import com.vkmu.datadestination.parser.FlowPacket;
 import com.vkmu.datadestination.parser.PacketHub;
+import com.vkmu.datadestination.utils.SettingsManager;
 
 import java.io.IOException;
 
@@ -87,9 +88,17 @@ public class VpnServiceImpl extends VpnService {
                         .addAddress("fd00:2:2::1", 64) // IPv6 local address
                         .addRoute("0.0.0.0", 0) // Route everything IPv4
                         .addRoute("::", 0) // Route everything IPv6
-                        .addDnsServer("8.8.8.8") // Google DNS
-                        .addDnsServer("2001:4860:4860::8888") // Google IPv6 DNS
+                        .addDnsServer(SettingsManager.getDnsIpv4(this))
+                        .addDnsServer(SettingsManager.getDnsIpv6(this))
+                        //.addDnsServer("1.1.1.1") // Google DNS
+                        // Google IPv6 DNS .addDnsServer("2001:4860:4860::8888")
+                        // .addDnsServer("2606:4700:4700::1111")
+
                         .setMtu(1400); // Adjusted MTU for overhead
+
+                //Debug log
+                        DebugLogger.log("Entered IPv4 Dns"+SettingsManager.getDnsIpv4(this));
+                        DebugLogger.log("Entered IPv6 dns"+SettingsManager.getDnsIpv6(this));
 
                 vpnInterface = builder.establish();
 
@@ -108,7 +117,10 @@ public class VpnServiceImpl extends VpnService {
                 vpnThread.start();
 
             } catch (Exception e) {
+                e.printStackTrace();
+                android.util.Log.e("VPN", "Failed to establish VPN", e);
                 stopVpn();
+
             }
         }
     }

@@ -3,17 +3,26 @@ package com.vkmu.datadestination;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.vkmu.datadestination.debug.DebugLogger;
 import com.vkmu.datadestination.parser.FlowPacket;
 import com.vkmu.datadestination.parser.GeoIPOffline;
+import com.vkmu.datadestination.parser.IpAddressUtils;
 import com.vkmu.datadestination.parser.PacketHub;
 
+import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 
 public class GeoIpActivity extends BaseActivity{
+
+    private static final int REFRESH_INTERVAL_MS = 3000;
+    private static final int MAX_VISIBLE_DESTINATIONS = 200;
+
+    private volatile boolean running = true;
+    private Thread refreshThread;
+    private String lastRenderedText = "";
+    private int lastPacketCount = -1;
+    private long lastNewestTimestamp = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,67 +31,77 @@ public class GeoIpActivity extends BaseActivity{
         setupDrawer();
         TextView txt = findViewById(R.id.txtGeoContent);
 
-        new Thread(() -> {
-            while (true) {
+        refreshThread = new Thread(() -> {
+            while (running) {
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(REFRESH_INTERVAL_MS);
 
+                    List<FlowPacket> packets = PacketHub.getPackets();
+                    long newestTimestamp = getNewestTimestamp(packets);
+                    if (packets.size() == lastPacketCount && newestTimestamp == lastNewestTimestamp) {
+                        continue;
+                    }
+
+                    lastPacketCount = packets.size();
+                    lastNewestTimestamp = newestTimestamp;
                     StringBuilder builder = new StringBuilder();
                     Set<String> seen = new HashSet<>();
 
-                    for (FlowPacket p : PacketHub.getPackets()) {
+                    for (int i = packets.size() - 1; i >= 0; i--) {
+                        if (seen.size() >= MAX_VISIBLE_DESTINATIONS) break;
 
-                        String ip = p.destinationIp;
-                        if (ip == null) continue;
-
-                        // extract destination
-                        if (ip.contains("->")) {
-                            ip = ip.split("->")[1].trim();
-                        }
-
-                        // remove IPv4 port
-                        if (ip.contains(":") && ip.contains(".")) {
-                            ip = ip.substring(0, ip.indexOf(":"));
-                        }
-
-                        // remove IPv6 port
-                        if (ip.contains(":") && !ip.contains(".")) {
-                            int lastColon = ip.lastIndexOf(":");
-                            if (lastColon > ip.indexOf(":")) {
-                                ip = ip.substring(0, lastColon);
-                            }
-                        }
-
-                        // skip private IPs
-                        if (ip.startsWith("10.") ||
-                                ip.startsWith("192.168.") ||
-                                ip.startsWith("172.") ||
-                                ip.equals("127.0.0.1") ||
-                                ip.startsWith("fd") ||
-                                ip.startsWith("fe80")) {
-                            continue;
-                        }
-
+                        String ip = IpAddressUtils.extractDestinationIp(packets.get(i).destinationIp);
+                        if (ip == null || IpAddressUtils.isLocalOrPrivate(ip)) continue;
                         if (seen.contains(ip)) continue;
+
                         seen.add(ip);
-
                         String geo = GeoIPOffline.resolve(ip);
-
-                        DebugLogger.log("CLEAN IP: " + ip + " → " + geo);
 
                         builder.append(ip)
                                 .append(" → ")
                                 .append(geo)
                                 .append("\n");
                     }
+
                     builder.append("TEST 8.8.8.8 → ")
                             .append(GeoIPOffline.resolve("8.8.8.8"))
                             .append("\n\n");
 
-                    runOnUiThread(() -> txt.setText(builder.toString()));
+                    if (packets.size() > MAX_VISIBLE_DESTINATIONS) {
+                        builder.append("Showing latest ")
+                                .append(MAX_VISIBLE_DESTINATIONS)
+                                .append(" unique public destinations.\n");
+                    }
+
+                    String output = builder.toString();
+                    if (!output.equals(lastRenderedText)) {
+                        lastRenderedText = output;
+                        DebugLogger.log("GeoIP refresh: packets=" + packets.size()
+                                + ", shown=" + seen.size());
+                        runOnUiThread(() -> {
+                            if (running) txt.setText(output);
+                        });
+                    }
 
                 } catch (Exception ignored) {}
             }
-        }).start();
+        }, "GeoIpRefreshThread");
+
+        refreshThread.start();
+    }
+
+    private long getNewestTimestamp(List<FlowPacket> packets) {
+        if (packets.isEmpty()) return -1;
+        return packets.get(packets.size() - 1).timestamp;
+    }
+
+    @Override
+    protected void onDestroy() {
+        running = false;
+        if (refreshThread != null) {
+            refreshThread.interrupt();
+            refreshThread = null;
+        }
+        super.onDestroy();
     }
 }

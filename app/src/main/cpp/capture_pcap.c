@@ -1,3 +1,10 @@
+/*
+ * THIS  IS HEAVILY MODIFIED FROM PCAPDROID GIT REPOSITORY
+ * FOR BETTER UNDERSTANDABILITY REFER TO THE ORIGIN
+ * https://github.com/emanuele-f/pcapdroid
+ * REFER TO THE REPOSITORY FOR ABOVE FOR BETTER REFERENCING
+ * */
+
 #include <jni.h>
 #include <android/log.h>
 #include <unistd.h>
@@ -100,9 +107,7 @@ static int send_to_vpn_interface(zdtun_t *tun, zdtun_pkt_t *pkt, const zdtun_con
     }
     return 0;
 }
-/**
- * Main Packet Loop for Non-Root VpnService
- */
+
 
 /*
  * void zdtun_inject_pkt(zdtun_t *pZdtun, uint8_t buffer[65535], uint32_t len) {
@@ -110,7 +115,9 @@ static int send_to_vpn_interface(zdtun_t *tun, zdtun_pkt_t *pkt, const zdtun_con
 }
  //Left unused
 */
-
+/**
+ * Main Packet Loop for Non-Root VpnService
+ */
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
     g_vm = vm;
     return JNI_VERSION_1_6;
@@ -124,6 +131,7 @@ Java_com_vkmu_datadestination_vpn_VpnServiceImpl_runPacketLoop(JNIEnv *env, jobj
 
     // Store global service reference
     g_service = (*env)->NewGlobalRef(env, thiz);
+
     // Cache protectSocket method
     jclass cls = (*env)->GetObjectClass(env, thiz);
     g_protectMethod = (*env)->GetMethodID(env, cls, "protectSocket", "(I)Z");
@@ -175,7 +183,7 @@ Java_com_vkmu_datadestination_vpn_VpnServiceImpl_runPacketLoop(JNIEnv *env, jobj
             break;
         }
 
-        // 1️⃣ If packet from VPN
+        // If packet from VPN
         if (FD_ISSET(vpn_fd, &rd_fds)) {
             ssize_t len = read(vpn_fd, buffer, sizeof(buffer));
             if (len > 0) {
@@ -183,10 +191,10 @@ Java_com_vkmu_datadestination_vpn_VpnServiceImpl_runPacketLoop(JNIEnv *env, jobj
             }
         }
 
-        // 2️⃣ Let zdtun handle its sockets
+        // Let zdtun handle its sockets
         zdtun_handle_fd(tun, &rd_fds, &wr_fds);
 
-        // 3️⃣ Cleanup expired connections
+        //Cleanup expired connections
         zdtun_purge_expired(tun);
     }
 
@@ -194,7 +202,7 @@ Java_com_vkmu_datadestination_vpn_VpnServiceImpl_runPacketLoop(JNIEnv *env, jobj
     LOGI("Packet loop stopped");
 }
 
-/*  void zdtun_step(zdtun_t *pZdtun, int timeout_ms) {
+/*  void zdtun_step(zdtun_t *pZdtun, int timeout_ms) { //unused
     zdtun_poll(pZdtun, timeout_ms);
 }
 */

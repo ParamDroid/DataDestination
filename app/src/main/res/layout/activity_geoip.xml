@@ -4,65 +4,88 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_screen">
 
-    <!-- MAIN CONTENT -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_screen">
 
-        <!-- Toolbar -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="64dp"
+            android:background="@color/dd_background"
+            android:elevation="0dp"
             android:title="@string/geoip_viewer"
-            android:background="#121212"
-            android:titleTextColor="#FFFFFF"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:titleTextColor="@color/dd_text_primary"
+            app:layout_constraintTop_toTopOf="parent"
+            app:navigationIconTint="@color/dd_text_primary" />
 
-        <!-- Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_margin="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="#1E1E1E"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            android:layout_margin="20dp"
+            app:cardBackgroundColor="@color/dd_surface"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:strokeColor="@color/dd_border"
+            app:strokeWidth="1dp">
 
-            <!-- Scrollable content -->
-            <ScrollView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="18dp">
 
                 <TextView
-                    android:id="@+id/txtGeoContent"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    android:text="@string/geoip_data_will_appear_here"
-                    android:textColor="#E0E0E0"
-                    android:textSize="14sp"
-                    android:fontFamily="monospace"
-                    android:lineSpacingExtra="4dp"
-                    android:textIsSelectable="true"/>
+                    android:background="@drawable/bg_chip_accent"
+                    android:text="@string/geoip_panel_title"
+                    android:textColor="@color/dd_accent"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
 
-            </ScrollView>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_divider" />
 
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/txtGeoContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:lineSpacingExtra="4dp"
+                        android:text="@string/geoip_data_will_appear_here"
+                        android:textColor="@color/dd_text_primary"
+                        android:textIsSelectable="true"
+                        android:textSize="14sp" />
+                </ScrollView>
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Drawer -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"
         android:layout_width="280dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:menu="@menu/drawer_menu"/>
-
+        android:background="@color/dd_surface"
+        app:itemIconTint="@color/dd_text_secondary"
+        app:itemTextColor="@color/dd_text_primary"
+        app:menu="@menu/drawer_menu" />
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -33,10 +33,11 @@ public class MainActivity extends BaseActivity {
         TextView debugBox = findViewById(R.id.txtDebug);
         View debugContainer = findViewById(R.id.debugContainer);
 
-        DebugLogger.attach(debugBox);
+        DebugLogger.observe(this, logs -> debugBox.setText(logs));
 
         boolean isDebug = getSharedPreferences("app_settings", MODE_PRIVATE)
                 .getBoolean("debug_mode", true);
+        DebugLogger.setDebugEnabled(isDebug);
 
         if (isDebug) {
             debugContainer.setVisibility(View.VISIBLE);
@@ -47,20 +48,7 @@ public class MainActivity extends BaseActivity {
         // DRAWER
         setupDrawer();
 
-        // DESKTOP RECEIVER
-        SharedPreferences prefs = getSharedPreferences("app_settings", MODE_PRIVATE);
-
-        boolean enabled = prefs.getBoolean("desktop_enabled", false);
-        String ip = prefs.getString("desktop_ip", "");
-        int port = prefs.getInt("desktop_port", 9000);
-
-        if (enabled && ip != null && !ip.isEmpty()) {
-            DesktopClient receiver = new DesktopClient(ip, port);
-            new Thread(receiver).start();
-            DebugLogger.log("DesktopClient started: " + ip + ":" + port);
-        } else {
-            DebugLogger.log("DesktopClient disabled or not configured");
-        }
+        applyDesktopSettings();
 
         // GEOIP INIT (background)
         new Thread(() -> GeoIPOffline.init(getApplicationContext())).start();
@@ -107,11 +95,29 @@ public class MainActivity extends BaseActivity {
 
         boolean isDebug = getSharedPreferences("app_settings", MODE_PRIVATE)
                 .getBoolean("debug_mode", true);
+        DebugLogger.setDebugEnabled(isDebug);
 
         if (isDebug) {
             debugContainer.setVisibility(View.VISIBLE);
         } else {
             debugContainer.setVisibility(View.GONE);
+        }
+
+        applyDesktopSettings();
+    }
+
+    private void applyDesktopSettings() {
+        SharedPreferences prefs = getSharedPreferences("app_settings", MODE_PRIVATE);
+
+        boolean enabled = prefs.getBoolean("desktop_enabled", false);
+        String ip = prefs.getString("desktop_ip", "");
+        int port = prefs.getInt("desktop_port", 9000);
+
+        if (enabled) {
+            DesktopClient.startOrUpdate(ip, port);
+        } else {
+            DesktopClient.stopActive();
+            DebugLogger.log("DesktopClient disabled");
         }
     }
     private void prepareVpn() {

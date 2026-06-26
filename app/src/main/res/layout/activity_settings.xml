@@ -4,122 +4,231 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_screen">
 
-    <!-- MAIN CONTENT -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_screen">
 
-        <!-- Toolbar -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="64dp"
+            android:background="@color/dd_background"
+            android:elevation="0dp"
             android:title="@string/settings"
-            android:background="#121212"
-            android:titleTextColor="#FFFFFF"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:titleTextColor="@color/dd_text_primary"
+            app:layout_constraintTop_toTopOf="parent"
+            app:navigationIconTint="@color/dd_text_primary" />
 
-        <!-- Card Container -->
-        <com.google.android.material.card.MaterialCardView
+        <ScrollView
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="#1E1E1E"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-            <!-- Content -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="20dp">
 
-                <!-- Section Title -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    android:layout_marginBottom="12dp"/>
-
-                <!-- Debug Switch -->
-                <Switch
-                    android:id="@+id/switchDebug"
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/enable_debug_mode"
-                    android:textColor="#E0E0E0"
-                    android:padding="8dp"/>
+                    app:cardBackgroundColor="@color/dd_surface"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/dd_border"
+                    app:strokeWidth="1dp">
 
-                <!-- API Key Input -->
-                <EditText
-                    android:id="@+id/editApiKey"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:hint="@string/enter_abuseipdb_api_key"
-                    android:textColor="#FFFFFF"
-                    android:textColorHint="#888888"
-                    android:background="#2A2A2A"
-                    android:padding="12dp"
-                    android:inputType="textPassword"
-                    android:fontFamily="monospace" />
-                <!-- Desktop Client Toggle -->
-                <Switch
-                    android:id="@+id/switchDesktop"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Enable Desktop Client(UNFINSHED)"
-                    android:textColor="#E0E0E0"
-                    android:padding="8dp"
-                    android:layout_marginTop="16dp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="706dp"
+                        android:orientation="vertical"
+                        android:padding="18dp">
 
-                <!-- Desktop IP -->
-                <EditText
-                    android:id="@+id/editDesktopIp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:hint="Desktop IP (e.g. 192.168.1.5)"
-                    android:textColor="#FFFFFF"
-                    android:textColorHint="#888888"
-                    android:background="#2A2A2A"
-                    android:padding="12dp"
-                    android:inputType="text"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_chip_accent"
+                            android:text="@string/settings_panel_title"
+                            android:textColor="@color/dd_accent"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
 
-                <!-- Desktop Port -->
-                <EditText
-                    android:id="@+id/editDesktopPort"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:hint="Port (default 9000)"
-                    android:textColor="#FFFFFF"
-                    android:textColorHint="#888888"
-                    android:background="#2A2A2A"
-                    android:padding="12dp"
-                    android:inputType="number"/>
+                        <Switch
+                            android:id="@+id/switchDebug"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:minHeight="48dp"
+                            android:padding="4dp"
+                            android:text="@string/debug_mode_label"
+                            android:textColor="@color/dd_text_primary"
+                            android:textSize="15sp" />
 
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="18dp"
+                            android:text="@string/api_key_label"
+                            android:textColor="@color/dd_text_secondary"
+                            android:textSize="13sp" />
+
+                        <EditText
+                            android:id="@+id/editApiKey"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_input_modern"
+                            android:fontFamily="monospace"
+                            android:hint="@string/enter_abuseipdb_api_key"
+                            android:inputType="textPassword"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            android:singleLine="true"
+                            android:textColor="@color/dd_text_primary"
+                            android:textColorHint="@color/dd_text_muted" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/bg_divider" />
+
+                        <Switch
+                            android:id="@+id/switchDesktop"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="18dp"
+                            android:minHeight="48dp"
+                            android:padding="4dp"
+                            android:text="@string/desktop_client_label"
+                            android:textColor="@color/dd_text_primary"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:text="@string/desktop_ip_label"
+                            android:textColor="@color/dd_text_secondary"
+                            android:textSize="13sp" />
+
+                        <EditText
+                            android:id="@+id/editDesktopIp"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_input_modern"
+                            android:hint="192.168.1.5"
+                            android:inputType="text"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            android:singleLine="true"
+                            android:textColor="@color/dd_text_primary"
+                            android:textColorHint="@color/dd_text_muted" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:text="@string/desktop_port_label"
+                            android:textColor="@color/dd_text_secondary"
+                            android:textSize="13sp" />
+
+                        <EditText
+                            android:id="@+id/editDesktopPort"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_input_modern"
+                            android:hint="9000"
+                            android:inputType="number"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            android:singleLine="true"
+                            android:textColor="@color/dd_text_primary"
+                            android:textColorHint="@color/dd_text_muted" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/bg_divider" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="18dp"
+                            android:text="Custom DNS Server"
+                            android:textColor="@color/dd_text_secondary"
+                            android:textSize="13sp" />
+
+                        <Switch
+                            android:id="@+id/switchCustomDns"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Use Custom DNS"
+                            android:textColor="@color/dd_text_primary"
+                            android:textSize="15sp" />
+
+                        <EditText
+                            android:id="@+id/editCustomDns"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_input_modern"
+                            android:hint="1.1.1.1"
+                            android:inputType="text"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            android:singleLine="true"
+                            android:textColor="@color/dd_text_primary"
+                            android:textColorHint="@color/dd_text_muted" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:text="IPv6 DNS Server"
+                            android:textColor="@color/dd_text_secondary"
+                            android:textSize="13sp" />
+
+                        <EditText
+                            android:id="@+id/editCustomDnsIpv6"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_input_modern"
+                            android:hint="2606:4700:4700::1111"
+                            android:inputType="text"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            android:singleLine="true"
+                            android:textColor="@color/dd_text_primary"
+                            android:textColorHint="@color/dd_text_muted" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
+        </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Drawer -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"
-        android:layout_width="280dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:menu="@menu/drawer_menu"/>
-
+        android:background="@color/dd_surface"
+        app:itemIconTint="@color/dd_text_secondary"
+        app:itemTextColor="@color/dd_text_primary"
+        app:menu="@menu/drawer_menu" />
 </androidx.drawerlayout.widget.DrawerLayout>

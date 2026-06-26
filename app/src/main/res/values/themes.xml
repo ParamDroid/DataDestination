@@ -1,23 +1,27 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Theme.DataDestination" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorPrimary">@color/dd_surface</item>
+        <item name="colorPrimaryVariant">@color/dd_background</item>
+        <item name="colorOnPrimary">@color/dd_text_primary</item>
+        <item name="colorSecondary">@color/dd_accent</item>
+        <item name="colorSecondaryVariant">@color/dd_accent_dark</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:statusBarColor">@color/dd_background</item>
+        <item name="android:navigationBarColor">@color/dd_background</item>
+        <item name="android:windowBackground">@color/dd_background</item>
+        <item name="android:colorAccent">@color/dd_accent</item>
     </style>
+
     <style name="Theme.DataDestination.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
     <style name="Theme.DataDestination.AppBarOverlay"
         parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
     <style name="Theme.DataDestination.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
